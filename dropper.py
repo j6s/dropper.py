@@ -49,13 +49,15 @@ class Folder:
             new_path = item["path"]
             online_rev = item["revision"]
             if item["is_dir"]:
-                if self.has_changes(new_path,online_rev):
-                    self.children.append(Folder(dropbox, new_path, local_prefix))
-                    self.meta[new_path] = online_rev;
-                    path = self.local_path + ".dropper_data.json";
-                    path = path.lower().encode("ascii","ignore")
-                    with open(path,"w") as out:
-                        json.dump(self.meta,out);
+                # if self.has_changes(new_path,online_rev):
+                #     self.children.append(Folder(dropbox, new_path, local_prefix))
+                #     self.meta[new_path] = online_rev;
+                #     path = self.local_path + ".dropper_data.json";
+                #     path = path.lower().encode("ascii","ignore")
+                #     with open(path,"w") as out:
+                #         json.dump(self.meta,out);
+                self.children.append(Folder(dropbox, new_path, local_prefix))
+
             else:
                 self.children.append(File(dropbox, new_path, local_prefix, self.meta, online_rev))
 
