@@ -13,7 +13,6 @@ local_path = "./dropbox_data/"
 
 # this is a quickfix for handling german umlauts
 def enc_path(path):
-    path = path.lower()
     path = path.replace("ä","ae")
     path = path.replace("Ä","Ae")
     path = path.replace("ö","oe")
@@ -42,6 +41,7 @@ class Dropbox:
 
 class Folder:
     def __init__(self, dropbox, path, local_prefix):
+        path = path.lower()
         path = enc_path(path)
         print(path)
         self.local_path = local_prefix + path + "/"
@@ -58,8 +58,11 @@ class Folder:
             new_path = item["path"]
             online_rev = item["revision"]
             if item["is_dir"]:
-                print("")
-                self.children.append(Folder(dropbox, new_path, local_prefix))
+                if self.has_changes(new_path,online_rev):
+                    self.children.append(Folder(dropbox, new_path, local_prefix))
+                    self.meta[new_path] = online_rev;
+                    with open(self.local_path + ".dropper_data.json","w") as out:
+                        json.dump(self.meta,out);
             else:
                 self.children.append(File(dropbox, new_path, local_prefix, self.meta, online_rev))
 
@@ -79,9 +82,24 @@ class Folder:
         if not os.path.exists(self.local_path):
             os.makedirs(self.local_path)
 
+    def has_changes(self,folder,online_rev):
+        try:
+            # checks if the revision-numbers differ
+            if self.meta[folder] != online_rev:
+                return True
+            else:
+                return False
+        except KeyError:
+            # the KeyError gets thrown, if a Key in the .dropper_data.json does not exist
+            # that happens, if the file is new on the server, so it has to be downloaded as well
+            return True
+
 
 class File:
     def __init__(self, dropbox, path, local_prefix, meta, online_rev):
+        path = path.lower();
+        path = enc_path(path);
+
         self.folder_meta = meta
         self.filename = ntpath.basename(path)
         self.dropbox = dropbox
