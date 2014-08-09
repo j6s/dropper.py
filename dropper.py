@@ -11,6 +11,18 @@ remote_path = "/"
 local_path = "./dropbox_data/"
 
 
+# this is a quickfix for handling german umlauts
+def enc_path(path):
+    path = path.lower()
+    path = path.replace("ä","ae")
+    path = path.replace("Ä","Ae")
+    path = path.replace("ö","oe")
+    path = path.replace("Ö","Oe")
+    path = path.replace("ü","ue")
+    path = path.replace("Ü","Ue")
+    return path
+
+
 # ################################################
 
 class Dropbox:
@@ -30,7 +42,7 @@ class Dropbox:
 
 class Folder:
     def __init__(self, dropbox, path, local_prefix):
-        path = path.lower();
+        path = enc_path(path)
         print(path)
         self.local_path = local_prefix + path + "/"
 
@@ -69,7 +81,6 @@ class Folder:
 
 class File:
     def __init__(self, dropbox, path, local_prefix, meta):
-        path = path.lower();
         self.folder_meta = meta
         self.filename = ntpath.basename(path)
         self.dropbox = dropbox
