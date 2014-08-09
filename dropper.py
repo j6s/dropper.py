@@ -56,11 +56,12 @@ class Folder:
         self.children = []
         for item in self._meta["contents"]:
             new_path = item["path"]
+            online_rev = item["revision"]
             if item["is_dir"]:
                 print("")
                 self.children.append(Folder(dropbox, new_path, local_prefix))
             else:
-                self.children.append(File(dropbox, new_path, local_prefix, self.meta))
+                self.children.append(File(dropbox, new_path, local_prefix, self.meta, online_rev))
 
     def get_meta(self):
         if not os.path.exists(self.local_path + ".dropper_data.json"):
@@ -80,7 +81,7 @@ class Folder:
 
 
 class File:
-    def __init__(self, dropbox, path, local_prefix, meta):
+    def __init__(self, dropbox, path, local_prefix, meta, online_rev):
         self.folder_meta = meta
         self.filename = ntpath.basename(path)
         self.dropbox = dropbox
@@ -88,14 +89,15 @@ class File:
         self.local_path = local_prefix + path
 
         self.path = path;
-        self._meta = dropbox.getMeta(path);
+        # self._meta = dropbox.getMeta(path);
+        self.revision = online_rev
 
         self.download_if_needed();
 
     def needs_download(self):
         try:
             # checks if the revision-numbers differ
-            if self._meta["revision"] != self.folder_meta[self.filename]:
+            if self.revision != self.folder_meta[self.filename]:
                 return True
             else:
                 return False
