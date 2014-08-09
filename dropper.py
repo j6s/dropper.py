@@ -11,16 +11,6 @@ remote_path = "/"
 local_path = "./dropbox_data/"
 
 
-# this is a quickfix for handling german umlauts
-def enc_path(path):
-    path = path.replace("ä","ae")
-    path = path.replace("Ä","Ae")
-    path = path.replace("ö","oe")
-    path = path.replace("Ö","Oe")
-    path = path.replace("ü","ue")
-    path = path.replace("Ü","Ue")
-    return path
-
 
 # ################################################
 
@@ -32,6 +22,9 @@ class Dropbox:
         return self.dropbox.metadata(path)
 
     def download(self, path, local_path):
+        local_path = local_path.lower();
+        local_path = local_path.encode("ascii","ignore")
+
         f, metadata = self.dropbox.get_file_and_metadata(path)
 
         with open(local_path, "wb") as out:
@@ -41,10 +34,8 @@ class Dropbox:
 
 class Folder:
     def __init__(self, dropbox, path, local_prefix):
-        print(path)
+        print(path.encode("ascii","ignore"))
         self.local_path = local_prefix + path + "/"
-        self.local_path = self.local_path.lower();
-        self.local_path = enc_path(self.local_path)
 
         self.path = path
         self._meta = dropbox.getMeta(path)
@@ -101,10 +92,8 @@ class File:
         self.folder_meta = meta
         self.filename = ntpath.basename(path)
         self.dropbox = dropbox
-        print(path)
+        print(path.encode("ascii","ignore"))
         self.local_path = local_prefix + path;
-        self.local_path = self.local_path.lower()
-        self.local_path = enc_path(self.local_path)
 
         self.path = path;
         # self._meta = dropbox.getMeta(path);
