@@ -41,10 +41,10 @@ class Dropbox:
 
 class Folder:
     def __init__(self, dropbox, path, local_prefix):
-        path = path.lower()
-        path = enc_path(path)
         print(path)
         self.local_path = local_prefix + path + "/"
+        self.local_path = self.local_path.lower();
+        self.local_path = enc_path(self.local_path)
 
         self.path = path
         self._meta = dropbox.getMeta(path)
@@ -97,14 +97,14 @@ class Folder:
 
 class File:
     def __init__(self, dropbox, path, local_prefix, meta, online_rev):
-        path = path.lower();
-        path = enc_path(path);
 
         self.folder_meta = meta
         self.filename = ntpath.basename(path)
         self.dropbox = dropbox
         print(path)
-        self.local_path = local_prefix + path
+        self.local_path = local_prefix + path;
+        self.local_path = self.local_path.lower()
+        self.local_path = enc_path(self.local_path)
 
         self.path = path;
         # self._meta = dropbox.getMeta(path);
