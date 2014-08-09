@@ -52,26 +52,35 @@ class Folder:
                 if self.has_changes(new_path,online_rev):
                     self.children.append(Folder(dropbox, new_path, local_prefix))
                     self.meta[new_path] = online_rev;
-                    with open(self.local_path + ".dropper_data.json","w") as out:
+                    path = self.local_path + ".dropper_data.json";
+                    path = path.lower().encode("ascii","ignore")
+                    with open(path,"w") as out:
                         json.dump(self.meta,out);
             else:
                 self.children.append(File(dropbox, new_path, local_prefix, self.meta, online_rev))
 
     def get_meta(self):
-        if not os.path.exists(self.local_path + ".dropper_data.json"):
-            with open(self.local_path + ".dropper_data.json", "w") as out:
+        path = self.local_path.lower();
+        file = path + "/.dropper_data.json"
+        file = file.encode("ascii","ignore")
+        print("getting meta " + file.decode("ascii"))
+
+        if not os.path.exists(file):
+            with open(file, "w") as out:
                 out.write("{}")
 
-        json_data = open(self.local_path + ".dropper_data.json")
+        json_data = open(file)
         meta = json.load(json_data)
         json_data.close()
         # print(meta)
         return meta
 
-
     def create_local(self):
-        if not os.path.exists(self.local_path):
-            os.makedirs(self.local_path)
+        path = self.local_path.lower().encode("ascii","ignore")
+
+        print("creating local" + path.decode("ascii"))
+        if not os.path.exists(path):
+            os.makedirs(path)
 
     def has_changes(self,folder,online_rev):
         try:
@@ -124,6 +133,7 @@ class File:
     def write_meta(self, new_meta):
         tmp = {}
         p = ntpath.dirname(self.local_path) + "/.dropper_data.json"
+        p = p.lower().encode("ascii","ignore")
 
         with open(p, "r") as out:
             tmp = json.load(out)
