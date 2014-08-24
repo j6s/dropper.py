@@ -1,3 +1,4 @@
 .dropper.json
 dropbox_data
 *.pyc
+test.py
