@@ -1,0 +1,19 @@
+USAGE
+=======
+
+    python dropper.py [ACTION] [ARGUMENTS]
+
+
+
+
+[ACTIONS]
+
+
+    download_only       Only downloads new or changed Files from Dropbox
+                        ignores Deletions
+                        download_only needs 2 Arguments:
+
+                        $ python dropper.py dlo [REMOTE_PATH] [LOCAL_PATH]
+
+
+    dlo                 shortcut to download_only
