@@ -17,20 +17,11 @@ Simple dropbox downsyncing script, intended for RaspberryPi use.
   }
   ````
 
-2. If you don't want to sync your whole dropbox or you want to change the local folder to sync to, change the variable in dropper.py (sorry for hardcoded paths, will add them to .dropper.json)
-
-3. Call dropper.py – it will ask you to open a URL in your Browser, to grant dropper.py access to your Dropbox.
-  
-  3.1 After granting access you will see a access token. Copy it into the prompt.
-  
-4. dropper.py is set up. The first sync will take a while.
-
-Every call of dropper.py after you have it setup will check, if dropbox contains new versions of a file. If it does, it will download them. If not, no additional traffic is produced
-
+2. Call `python3 dropper.py` and read the USAGE information. Alternatively, read the `USAGE` file in the repository
 
 # Limitations
 
-For now, the Capitalization of paths is ignored, every path is converted to lowercase.
+For now, the Capitalization of paths is ignored, every path is converted to lowercase and ASCII.
 
 This is caused by a bug in the Dropbox API, where somtimes files have incorrect metadata
 
