@@ -13,8 +13,7 @@ from src import *
 #   This shall be the "front facing" side of the logic:
 #   Everything is tied together here
 #
-# If dropper is used anywhere, please use this class intead of the File & Folder
-# Objects themself
+# If dropper is used anywhere, it should be used as a Object of the Class Dropper
 #
 class Dropper:
 
