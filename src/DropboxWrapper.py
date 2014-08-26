@@ -11,7 +11,7 @@ class DropboxWrapper:
         return self.dropbox.metadata(path)
 
     def download(self, path, local_path):
-        print(path)
+        print(path.encode("ascii","ignore"))
         print("\t Downloading")
 
         local_path = local_path.lower();

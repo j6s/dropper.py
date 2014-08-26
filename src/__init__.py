@@ -8,6 +8,7 @@ global COLS
 __rows, COLS = os.popen('stty size', 'r').read().split()
 
 def print_status(text):
+    text = text.encode("ascii", "ignore")
     print("{0:<{1}}\r".format(text,COLS)),
 
 
