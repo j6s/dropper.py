@@ -32,11 +32,6 @@ class DropboxWrapper:
     # Download the given remote path to the given local path
     #
     def download(self, path, local_path):
-        # Print out the filename and the fact, that it is Downloading,
-        # So the user knows what is happening
-        print(path.encode("ascii","ignore"))
-        print("\t Downloading")
-
         # The local path is converted to lowercase to prevent some errors
         # from happening.
         #

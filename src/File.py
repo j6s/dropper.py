@@ -19,8 +19,9 @@ class File:
     # - online_rev: The revision number from the Dropbox API
     #   This is used to determine, if the file shall be downloaded or not
     #
-    def __init__(self, dropbox, path, local_prefix, online_rev):
-        print_status(path)
+    def __init__(self, dropbox, path, local_prefix, online_rev, settings):
+        self.settings = settings
+        print_status("indexing",path)
         self.dropbox = dropbox
 
         # Detrmine the local path and the filename
@@ -30,10 +31,14 @@ class File:
         self.path = path
         self.revision = online_rev
 
-    #
-    # (private) Returns true, if the file in Dropbox is newer than the local
-    #           Version or if the file was created
-    def __needs_download(self):
+    def __has_remote_changes(self):
+        if self.settings["force"]:
+            return True
+
+        """
+            Checks, if the remote has changes, returns True if so, False if not
+        """
+
         try:
             # checks if the revision-numbers differ
             if self.revision != self.folder_meta[self.filename]:
@@ -45,20 +50,20 @@ class File:
             # that happens, if the file is new on the server, so it has to be downloaded as well
             return True
 
-    #
-    # (private) Check if the file needs to be downloaded. If yes, download it
-    #
     def __download_if_needed(self):
-        if self.__needs_download():
+        """
+            Downloads the file, if there is a newer Version online
+        """
+        if self.__has_remote_changes():
+            print_status("downloading",self.path)
             new_meta = self.dropbox.download(self.path, self.local_path);
-            self.__write_meta(new_meta)
+            self.__write_local_meta(new_meta)
 
-    #
-    # (private) Write new metadata to the .dropper.json of that path
-    #           This is used every time a File was downloaded and the revision number increases
-    #           By one
-    #
-    def __write_meta(self, new_meta):
+    def __write_local_meta(self, new_meta):
+        """
+            Writes the new metadata from the dropbox API to the local .dropper_data.json file
+            expects a dropbox metadata object with set revision attribute as new_meta
+        """
         tmp = {}
         p = ntpath.dirname(self.local_path) + "/.dropper_data.json"
         p = p.lower().encode("ascii","ignore")
@@ -71,9 +76,9 @@ class File:
         with open(p, "w") as out:
             json.dump(tmp, out)
 
-    #
-    # (public) Download a file (if needed) - Maps 1:1 to __download_if_needed
-    #
     def download(self, meta):
+        """
+            Download the file (if needed)
+        """
         self.folder_meta = meta
         self.__download_if_needed()

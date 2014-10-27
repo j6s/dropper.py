@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 __author__ = 'thephpjo'
+__version__ = "0.1.0"
 
 from src.Dropper import Dropper
 import sys
 import itertools
+import argparse
 
 
 #
@@ -36,8 +38,8 @@ import itertools
 # This is done, if the user gives us invalid information
 #
 def print_usage():
-    print("\n\n")
-    with open("USAGE") as out:
+    print("\n Dropper.py {0} \n".format(__version__))
+    with open("USAGE.md") as out:
         print(out.read())
     print("\n\n")
 
@@ -64,20 +66,30 @@ try:
 
     # every argument after the action is a argument for the Dropper Object
     # The count of them depends on the function
-    args = []
-    for arg in itertools.islice(sys.argv,2,len(sys.argv)):
-        args.append(arg)
+    #args = []
+    #for arg in itertools.islice(sys.argv,2,len(sys.argv)):
+    #    args.append(arg)
+    #print(args);
+
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument('strings',metavar="N",type=str,nargs="+")
+    argparser.add_argument("--force",dest="force",action="store_const",const=True,default=False)
+
+    args = argparser.parse_args()
+
+    print(args)
+
 
     # switch depending on the action
     # At the moment there is only 1 Action: download_only / dlo
-    if  "download_only" in action or "dlo" in action:
+    if  "download_only" in args.strings[0] or "dlo" in args.strings[0]:
         # download_only requires 2 Arguments to be present:
         # a remote_path and local_path
-        if len(args) < 2:
-            error("download_only needs 2 arguments, {0} given".format(len(args)))
+        if len(args.strings) < 2:
+            error("download_only needs 2 arguments, {0} given".format(len(args.strings)-1))
 
         else:
-            drop = Dropper(args[0],args[1])
+            drop = Dropper(args.strings[1],args.strings[2],args.force)
             drop.download_only()
 
     else:

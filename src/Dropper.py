@@ -20,7 +20,7 @@ class Dropper:
     #
     # The constructor receives the folder names of the Local and the remote root / starting path
     #
-    def __init__(self, remote, local):
+    def __init__(self, remote, local, force=False):
         self.remote = remote
         self.local = local
 
@@ -37,9 +37,8 @@ class Dropper:
         # https://www.dropbox.com/developers/apps
         #
         # @TODO Change this to the nicer looking `with open(path) as variable` Syntax
-        json_data = open(".dropper.json")
-        self.config = json.load(json_data)
-        json_data.close()
+        with open(".dropper.json") as f:
+            self.config = json.load(f)
 
         # Make shure the person is authorized by dropbox and initialize the DropboxWrapper Object
         self.authorize()
@@ -54,7 +53,10 @@ class Dropper:
         # Initialized the root folder Object.
         # It in turn will initialize a Folder (or File) Object,
         # cascading all the way down
-        self.root = Folder(self.dropbox,remote,local)
+        settings = {
+            "force": force
+        }
+        self.root = Folder(self.dropbox,remote,local,settings)
 
     #
     # Start the Dropbox user authorization proccess
@@ -91,7 +93,11 @@ class Dropper:
     # @TODO Check the validity of the access_token
     def authorize(self):
         logging.info(self.config)
-        if not self.config["access_token"] or not self.config["user_id"]:
+
+        try:
+            if not self.config["access_token"] or not self.config["user_id"]:
+                self.do_authorization()
+        except KeyError:
             self.do_authorization()
 
     #

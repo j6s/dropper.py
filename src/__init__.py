@@ -6,17 +6,30 @@ import os
 # This is used to pad the status status text
 global COLS
 __rows, COLS = os.popen('stty size', 'r').read().split()
+statuscols = 20
+
+
+def format_out(status,text=None):
+    if text is None:
+        text = status
+        status = ""
+    else:
+        status = "[{}]".format(status)
+
+    # Let's just go shure, this is Python,
+    # who knows, what could happen
+    text   = str(str(text).encode("ascii","ignore"))
+    status = str(str(status).encode("ascii","ignore"))
+
+    out = "{0:<{1}}{2}".format(status,statuscols,text)
+    return out
 
 
 #
 # Status printing: These messages overwrite each other
 # and do not stay in the log
 #
-def print_status(text):
-    # encode the text in ascii, because python does not like encoding stuff
-    # I am shure there is a nicer way to do this, but for now, this is OK
-    text = text.encode("ascii", "ignore")
-
+def print_status(status,text=None,overwrite=False):
     # Output the text. There is a lot going on here:
     #
     # - The text is outputted `{0}` and padded to the left to the length of COLS `:<{1}`
@@ -29,7 +42,11 @@ def print_status(text):
     # - The `,` at the end is quite important: It prevents print from adding a
     #   linebreak at the end. A linebreak at the end would negate \r:
     #   Without it the next print would not overwrite the current one
-    print("{0:<{1}}\r".format(text,COLS)),
+    out = "{0:<{1}}".format(format_out(status,text),COLS)
+    if overwrite:
+        out += "\r"
+    print(out),
+
 
 
 # Import every part of dropper here. This is done to simplify the import section
